@@ -63,7 +63,7 @@ class PacmanGame(arcade.View):
         self.coin_list=arcade.SpriteList()
         self.ghost_list=arcade.SpriteList()
         self.player_list=arcade.SpriteList()
-        self.player = "NONE"
+        self.player = None
         self.game_over = False
         self.background_color = arcade.color.BLACK
         self.start_x=0
