@@ -1,5 +1,8 @@
 import random
 
+import arcade
+
+
 class Coin:
     def __init__(self, x, y, value = 10):
         self.center_x = x
@@ -53,6 +56,18 @@ class Wall:
 
 
 
+class PacmanGame(arcade.View):
+    def __init__(self):
+        super().__init__()
+        self.wall_list=arcade.SpriteList()
+        self.coin_list=arcade.SpriteList()
+        self.ghost_list=arcade.SpriteList()
+        self.player_list=arcade.SpriteList()
+        self.player = "NONE"
+        self.game_over = False
+        self.background_color = arcade.color.BLACK
+        self.start_x=0
+        self.start_y=0
 
 
 # מפה לדוגמה: # = קיר, . = מטבע, P = פקמן, G = רוח, רווח = כלום
