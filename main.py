@@ -69,6 +69,18 @@ class PacmanGame(arcade.View):
         self.start_x=0
         self.start_y=0
 
+def on_draw(self):
+    arcade.open_window(WIDTH_WINDOW, HEIGHT_WINDOW, WINDOW_TITLE)
+    self.wall_list.draw()
+    self.coin_list.draw()
+    self.ghost_list.draw()
+    self.player_list.draw()
+    arcade.draw_text(f"Score: {self.player.score}",50,550,arcade.color.WHITE)
+    arcade.draw_text(f"Lives: {self.player.lives}",50,500, arcade.color.WHITE)
+    if self.player.lives==0:
+        arcade.draw_text("GAME OVER", 400, 300, arcade.color.GOLD, 100)
+
+
 
 # מפה לדוגמה: # = קיר, . = מטבע, P = פקמן, G = רוח, רווח = כלום
 LEVEL_MAP = [
