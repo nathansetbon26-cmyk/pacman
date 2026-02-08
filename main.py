@@ -1,10 +1,13 @@
 import random
+from turtledemo.penrose import start
 
 import arcade
 WIDTH_WINDOW=800
 HEIGHT_WINDOW=600
 WINDOW_TITLE="PAC-MAN"
 TILE_SIZE=32
+start_x=0
+start_y=0
 
 class Coin:
     def __init__(self, x, y, value = 10):
@@ -115,9 +118,49 @@ class PacmanGame(arcade.View):
 
     def on_key_release(self, key, modifiers):
         if self.key == arcade.key.Up or self.key == arcade.key.Down:
-            self.change_y = 0
+            self.player.change_y = 0
         if self.key == arcade.key.Left or self.key == arcade.key.Right:
-            self.change_x = 0
+            self.player.change_x = 0
+
+
+    def on_update(self, delta_time):
+        if not self.game_over:
+            now_x = self.center_x
+            now_y = self.center_y
+            self.player.move()
+            wall_player = arcade.check_for_collision_with_list(self.player, self.wall_list)
+            if len(wall_player)>0:
+                self.center_x = now_x
+                self.center_y = now_y
+
+            for ghost in self.ghost_list:
+                current_x = ghost.center_x
+                current_y = ghost.center_y
+                ghost.update(self)
+                ghost_wall = arcade.check_for_collision_with_list(ghost, self.wall_list)
+                while not len(ghost_wall)>0:
+                    ghost.center_x = current_x
+                    ghost.center_y = current_y
+                    ghost.update(self)
+
+                coin_check = arcade.check_for_collision_with_list(self.player, self.coin_list)
+                if len(coin_check>0):
+                    self.score+=1
+                    self.coin_list.remove(coin_check)
+
+                ghost_player = arcade.check_for_collision_with_list(self.player, self.ghost_list)
+                if len(ghost_player):
+                    self.player.lives-=1
+                    self.player.center_x=start_x
+                    self.player.center_y = start_y
+                    self.player.speed = 0
+                    if self.player.lives==0:
+                        self.game_over= True
+
+
+
+
+
 
 
 
