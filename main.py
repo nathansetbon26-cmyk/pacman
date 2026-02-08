@@ -83,6 +83,48 @@ class PacmanGame(arcade.View):
         if self.game_over:
             arcade.draw_text("GAME OVER", 400, 300, arcade.color.GOLD, 100)
 
+    def setup(self, ):
+        self.wall_list = arcade.spritelist()
+        self.coin_list = arcade.spritelist()
+        self.ghost_list = arcade.spritelist()
+        self.player_list = arcade.spritelist()
+        self.game_over = False
+
+        for row_idx, row in enumerate(LEVEL_MAP):
+            for col_idx, cell in enumerate(row):
+                x = col_idx * TILE_SIZE + TILE_SIZE / 2
+                y = (rows - row_idx - 1) * TILE_SIZE + TILE_SIZE / 2
+
+                if LEVEL_MAP[x][y] == wall:
+                    self.wall_list.append((x, y))
+
+                elif LEVEL_MAP[x][y] == player:
+                    self.player_list.append((x, y))
+
+                elif LEVEL_MAP[x][y] == coin:
+                    self.coin_list.append((x, y))
+
+                elif LEVEL_MAP[x][y] == ghost:
+                    self.ghost_list.append((x, y))
+
+    def key_on_release(self, key, modifiers):
+        if key == arcade.key.LEFT or key == arcade.key.RIGHT:
+            self.change_x = 0
+        elif key == arcade.key.UP or key == arcade.key.DOWN:
+            self.change_y = 0
+
+    def on_key_release(self, key, modifiers):
+        if self.key == arcade.key.Up or self.key == arcade.key.Down:
+            self.change_y = 0
+        if self.key == arcade.key.Left or self.key == arcade.key.Right:
+            self.change_x = 0
+
+
+
+
+
+
+
 
 
 # מפה לדוגמה: # = קיר, . = מטבע, P = פקמן, G = רוח, רווח = כלום
