@@ -1,33 +1,42 @@
 import random
-from turtledemo.penrose import start
-
 import arcade
+
 WIDTH_WINDOW=800
 HEIGHT_WINDOW=600
 WINDOW_TITLE="PAC-MAN"
 TILE_SIZE=32
-start_x=0
-start_y=0
 
-class Coin:
+class Coin(arcade.sprite):
     def __init__(self, x, y, value = 10):
+        super().__init__()
+        radius = TILE_SIZE//8
+        texture = arcade.texture.make_circle_texture(radius, arcade.color.GOLDEN_YELLOW)
+        self.texture = texture
+        self.width = texture.width
+        self.height = texture.height
         self.center_x = x
         self.center_y = y
         self.value = value
 
 
-class Character:
-    def __init__(self, started_x, started_y, speed = 0, change_x = 0, change_y = 0):
+class Character(arcade.sprite):
+    def __init__(self, started_x, started_y, speed, color):
+        super().__init__()
+        radius = TILE_SIZE//2-2
+        texture = arcade.make_circle_texture(radius, color)
+        self.texture= texture
+        self.width = texture.width
+        self.height = texture.height
         self.center_x = started_x
         self.center_y = started_y
         self.speed = speed
-        self.change_x = change_x
-        self.change_y = change_y
+        self.change_x = 0
+        self.change_y = 0
 
 
 class Player(Character):
     def __init__(self, started_x, started_y):
-        super().__init__(started_x, started_y)
+        super().__init__(started_x, started_y, 2.5, arcade.color.YELLOW)
         self.score = 0
         self.lives = 3
 
@@ -37,7 +46,7 @@ class Player(Character):
 
 class Enemy(Character):
     def __init__(self, started_x, started_y):
-        super().__init__(started_x, started_y)
+        super().__init__(started_x, started_y, arcade.color.RED)
         self.time_to_change_direction = 0
 
     def pick_new_direction(self):
@@ -55,8 +64,13 @@ class Enemy(Character):
         self.time_to_change_direction -= delta_time
 
 
-class Wall:
+class Wall(arcade.sprite):
     def __init__(self, center_x, center_y):
+        super().__init__()
+        texture = arcade.texture.make_soft_square_texture(TILE_SIZE, arcade.color.BLUE)
+        self.texture = texture
+        self.width = texture.width
+        self.height = texture.height
         self.center_x = center_x
         self.center_y = center_y
 
@@ -151,8 +165,8 @@ class PacmanGame(arcade.View):
                 ghost_player = arcade.check_for_collision_with_list(self.player, self.ghost_list)
                 if len(ghost_player):
                     self.player.lives-=1
-                    self.player.center_x=start_x
-                    self.player.center_y = start_y
+                    self.player.center_x=self.started_x
+                    self.player.center_y = self.started_y
                     self.player.speed = 0
                     if self.player.lives==0:
                         self.game_over= True
