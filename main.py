@@ -100,7 +100,9 @@ class PacmanGame(arcade.View):
         if self.game_over:
             arcade.draw_text("GAME OVER", 400, 300, arcade.color.GOLD, 100)
 
-    def setup(self, ):
+
+
+    def setup(self):
         self.wall_list = arcade.spritelist()
         self.coin_list = arcade.spritelist()
         self.ghost_list = arcade.spritelist()
@@ -110,32 +112,28 @@ class PacmanGame(arcade.View):
         for row_idx, row in enumerate(LEVEL_MAP):
             for col_idx, cell in enumerate(row):
                 x = col_idx * TILE_SIZE + TILE_SIZE / 2
-                y = (rows - row_idx - 1) * TILE_SIZE + TILE_SIZE / 2
+                y = (row - row_idx - 1) * TILE_SIZE + TILE_SIZE / 2
 
-                if LEVEL_MAP[x][y] == wall:
-                    self.wall_list.append((x, y))
+                if LEVEL_MAP[col_idx][row_idx] == "wall":
+                    self.wall_list.append((col_idx, row_idx))
 
-                elif LEVEL_MAP[x][y] == player:
-                    self.player_list.append((x, y))
+                elif LEVEL_MAP[col_idx][row_idx] == "player":
+                    self.player_list.append((col_idx, row_idx))
 
-                elif LEVEL_MAP[x][y] == coin:
-                    self.coin_list.append((x, y))
+                elif LEVEL_MAP[col_idx][row_idx] == "coin":
+                    self.coin_list.append((col_idx, row_idx))
 
-                elif LEVEL_MAP[x][y] == ghost:
-                    self.ghost_list.append((x, y))
+                elif LEVEL_MAP[col_idx][row_idx] == "ghost":
+                    self.ghost_list.append((col_idx, row_idx))
 
-    def key_on_release(self, key, modifiers):
-        if key == arcade.key.LEFT or key == arcade.key.RIGHT:
-            self.change_x = 0
-        elif key == arcade.key.UP or key == arcade.key.DOWN:
-            self.change_y = 0
+
+
 
     def on_key_release(self, key, modifiers):
-        if self.key == arcade.key.Up or self.key == arcade.key.Down:
-            self.player.change_y = 0
-        if self.key == arcade.key.Left or self.key == arcade.key.Right:
+        if key == arcade.key.LEFT or key == arcade.key.RIGHT:
             self.player.change_x = 0
-
+        elif key == arcade.key.UP or key == arcade.key.DOWN:
+            self.player.change_y = 0
 
     def on_update(self, delta_time):
         if not self.game_over:
