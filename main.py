@@ -6,7 +6,7 @@ HEIGHT_WINDOW=600
 WINDOW_TITLE="PAC-MAN"
 TILE_SIZE=32
 
-class Coin(arcade.sprite):
+class Coin(arcade.Sprite):
     def __init__(self, x, y, value = 10):
         super().__init__()
         radius = TILE_SIZE//8
@@ -19,7 +19,7 @@ class Coin(arcade.sprite):
         self.value = value
 
 
-class Character(arcade.sprite):
+class Character(arcade.Sprite):
     def __init__(self, started_x, started_y, speed, color):
         super().__init__()
         radius = TILE_SIZE//2-2
@@ -56,7 +56,7 @@ class Enemy(Character):
         self.change_y = fate[1]
         self.time_to_change_direction = random.uniform(0.3, 1.0)
 
-    def update(self,  delta_time = 1/60):
+    def update(self, delta_time=1/60):
         if self.time_to_change_direction == 0:
             self.pick_new_direction()
         self.center_x += self.change_x * self.speed
@@ -64,7 +64,7 @@ class Enemy(Character):
         self.time_to_change_direction -= delta_time
 
 
-class Wall(arcade.sprite):
+class Wall(arcade.Sprite):
     def __init__(self, center_x, center_y):
         super().__init__()
         texture = arcade.texture.make_soft_square_texture(TILE_SIZE, arcade.color.BLUE)
@@ -175,15 +175,6 @@ class PacmanGame(arcade.View):
                     self.player.speed = 0
                     if self.player.lives==0:
                         self.game_over= True
-
-
-
-
-
-
-
-
-
 
 
 
