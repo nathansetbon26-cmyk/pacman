@@ -46,7 +46,7 @@ class Player(Character):
 
 class Enemy(Character):
     def __init__(self, started_x, started_y):
-        super().__init__(started_x, started_y, arcade.color.RED)
+        super().__init__(started_x, started_y, 2.5, arcade.color.RED)
         self.time_to_change_direction = 0
 
     def pick_new_direction(self):
@@ -103,31 +103,38 @@ class PacmanGame(arcade.View):
 
 
     def setup(self):
-        self.wall_list = arcade.spritelist()
-        self.coin_list = arcade.spritelist()
-        self.ghost_list = arcade.spritelist()
-        self.player_list = arcade.spritelist()
+        self.wall_list = arcade.SpriteList()
+        self.coin_list = arcade.SpriteList()
+        self.ghost_list = arcade.SpriteList()
+        self.player_list = arcade.SpriteList()
         self.game_over = False
 
         for row_idx, row in enumerate(LEVEL_MAP):
             for col_idx, cell in enumerate(row):
                 x = col_idx * TILE_SIZE + TILE_SIZE / 2
-                y = (row - row_idx - 1) * TILE_SIZE + TILE_SIZE / 2
+                y = row_idx * TILE_SIZE + TILE_SIZE / 2
 
-                if LEVEL_MAP[col_idx][row_idx] == "wall":
-                    self.wall_list.append((col_idx, row_idx))
+                if LEVEL_MAP[col_idx][row_idx] == "#":
+                    self.wall_list.append(Wall(x, y))
 
-                elif LEVEL_MAP[col_idx][row_idx] == "player":
-                    self.player_list.append((col_idx, row_idx))
+                elif LEVEL_MAP[col_idx][row_idx] == "P":
+                    self.player_list.append(Character(x, y, 2.5, arcade.color.YELLOW))
 
-                elif LEVEL_MAP[col_idx][row_idx] == "coin":
-                    self.coin_list.append((col_idx, row_idx))
+                elif LEVEL_MAP[col_idx][row_idx] == ".":
+                    self.coin_list.append(Coin(x, y))
 
-                elif LEVEL_MAP[col_idx][row_idx] == "ghost":
-                    self.ghost_list.append((col_idx, row_idx))
+                elif LEVEL_MAP[col_idx][row_idx] == "G":
+                    self.ghost_list.append(Enemy(x, y))
 
-
-
+    def on_key_press(self, key, modifiers):
+        if key == arcade.key.UP:
+            self.player.change_x = 1
+        if key == arcade.key.DOWN:
+            self.player.change_y = -1
+        if key == arcade.key.LEFT:
+            self.player.change_x = -1
+        if key == arcade.key.RIGHT:
+            self.player.change_y = 1
 
     def on_key_release(self, key, modifiers):
         if key == arcade.key.LEFT or key == arcade.key.RIGHT:
@@ -142,29 +149,29 @@ class PacmanGame(arcade.View):
             self.player.move()
             wall_player = arcade.check_for_collision_with_list(self.player, self.wall_list)
             if len(wall_player)>0:
-                self.center_x = now_x
-                self.center_y = now_y
+                self.player.center_x = now_x
+                self.player.center_y = now_y
 
             for ghost in self.ghost_list:
                 current_x = ghost.center_x
                 current_y = ghost.center_y
-                ghost.update(self)
+                ghost.update()
                 ghost_wall = arcade.check_for_collision_with_list(ghost, self.wall_list)
                 while not len(ghost_wall)>0:
                     ghost.center_x = current_x
                     ghost.center_y = current_y
-                    ghost.update(self)
+                    ghost.update()
 
                 coin_check = arcade.check_for_collision_with_list(self.player, self.coin_list)
-                if len(coin_check>0):
-                    self.score+=1
-                    self.coin_list.remove(coin_check)
+                if len(coin_check)>0:
+                    self.player.score+=1
+                    self.coin_list.remove(coin_check[0])
 
                 ghost_player = arcade.check_for_collision_with_list(self.player, self.ghost_list)
                 if len(ghost_player):
                     self.player.lives-=1
-                    self.player.center_x=self.started_x
-                    self.player.center_y = self.started_y
+                    self.player.center_x=self.player.started_x
+                    self.player.center_y = self.player.started_y
                     self.player.speed = 0
                     if self.player.lives==0:
                         self.game_over= True
@@ -189,4 +196,3 @@ LEVEL_MAP = [
     "#.........#",
     "###########",
 ]
-
