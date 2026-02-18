@@ -9,7 +9,7 @@ TILE_SIZE=32
 class Coin(arcade.Sprite):
     def __init__(self, x, y, value = 10):
         super().__init__()
-        radius = TILE_SIZE//8
+        radius = TILE_SIZE//4
         texture = arcade.texture.make_circle_texture(radius, arcade.color.GOLDEN_YELLOW)
         self.texture = texture
         self.width = texture.width
@@ -22,7 +22,7 @@ class Coin(arcade.Sprite):
 class Character(arcade.Sprite):
     def __init__(self, started_x, started_y, speed, color):
         super().__init__()
-        radius = TILE_SIZE//2-2
+        radius = TILE_SIZE-6
         texture = arcade.make_circle_texture(radius, color)
         self.texture= texture
         self.width = texture.width
@@ -36,7 +36,7 @@ class Character(arcade.Sprite):
 
 class Player(Character):
     def __init__(self, started_x, started_y):
-        super().__init__(started_x, started_y, 2.5, arcade.color.YELLOW)
+        super().__init__(started_x, started_y, 0.125, arcade.color.YELLOW)
         self.score = 0
         self.lives = 3
 
@@ -57,7 +57,7 @@ class Enemy(Character):
         self.time_to_change_direction = random.uniform(0.3, 1.0)
 
     def update(self, delta_time=1/60):
-        if self.time_to_change_direction == 0:
+        if self.time_to_change_direction <= 0:
             self.pick_new_direction()
         self.center_x += self.change_x * self.speed
         self.center_y += self.change_y * self.speed
@@ -90,7 +90,6 @@ class PacmanGame(arcade.View):
         self.start_y=0
 
     def on_draw(self):
-        # arcade.open_window(WIDTH_WINDOW, HEIGHT_WINDOW, WINDOW_TITLE)
         self.clear()
         self.wall_list.draw()
         self.coin_list.draw()
@@ -99,7 +98,7 @@ class PacmanGame(arcade.View):
         arcade.draw_text(f"Score: {self.player.score}",50,550,arcade.color.WHITE)
         arcade.draw_text(f"Lives: {self.player.lives}",50,500, arcade.color.WHITE)
         if self.game_over:
-            arcade.draw_text("GAME OVER", 400, 300, arcade.color.GOLD, 100)
+            arcade.draw_text("GAME OVER", 200, 300, arcade.color.GOLD, 60)
 
 
 
@@ -112,14 +111,16 @@ class PacmanGame(arcade.View):
 
         for row_idx, row in enumerate(LEVEL_MAP):
             for col_idx, cell in enumerate(row):
-                x = col_idx * TILE_SIZE + TILE_SIZE / 2
-                y = row_idx * TILE_SIZE + TILE_SIZE / 2
+                x = col_idx * TILE_SIZE + TILE_SIZE // 2
+                y = row_idx * TILE_SIZE + TILE_SIZE // 2
 
                 if LEVEL_MAP[row_idx][col_idx] == "#":
                     self.wall_list.append(Wall(x, y))
 
                 elif LEVEL_MAP[row_idx][col_idx] == "P":
                     self.player=Player(x, y)
+                    self.start_x = x
+                    self.start_y = y
                     self.player_list.append(self.player)
 
                 elif LEVEL_MAP[row_idx][col_idx] == ".":
@@ -132,13 +133,13 @@ class PacmanGame(arcade.View):
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.UP:
-            self.player.change_x = 1
+            self.player.change_y = 32
         if key == arcade.key.DOWN:
-            self.player.change_y = -1
+            self.player.change_y = -32
         if key == arcade.key.LEFT:
-            self.player.change_x = -1
+            self.player.change_x = -32
         if key == arcade.key.RIGHT:
-            self.player.change_y = 1
+            self.player.change_x = 32
 
     def on_key_release(self, key, modifiers):
         if key == arcade.key.LEFT or key == arcade.key.RIGHT:
@@ -148,8 +149,8 @@ class PacmanGame(arcade.View):
 
     def on_update(self, delta_time):
         if not self.game_over:
-            now_x = self.center_x
-            now_y = self.center_y
+            now_x = self.player.center_x
+            now_y = self.player.center_y
             self.player.move()
             wall_player = arcade.check_for_collision_with_list(self.player, self.wall_list)
             if len(wall_player)>0:
@@ -161,36 +162,44 @@ class PacmanGame(arcade.View):
                 current_y = ghost.center_y
                 ghost.update()
                 ghost_wall = arcade.check_for_collision_with_list(ghost, self.wall_list)
-                while len(ghost_wall)>0:
+                if len(ghost_wall):
                     ghost.center_x = current_x
                     ghost.center_y = current_y
-                    ghost.update()
 
                 coin_check = arcade.check_for_collision_with_list(self.player, self.coin_list)
                 if len(coin_check)>0:
-                    self.player.score+=1
+                    self.player.score+=10
                     self.coin_list.remove(coin_check[0])
 
                 ghost_player = arcade.check_for_collision_with_list(self.player, self.ghost_list)
                 if len(ghost_player):
                     self.player.lives-=1
-                    self.player.center_x=self.player.started_x
-                    self.player.center_y = self.player.started_y
-                    self.player.speed = 0
+                    self.player.center_x=self.start_x
+                    self.player.center_y = self.start_x
                     if self.player.lives==0:
-                        self.game_over= True
+                        self.game_over = True
 
 
 
 
 # מפה לדוגמה: # = קיר, . = מטבע, P = פקמן, G = רוח, רווח = כלום
 LEVEL_MAP = [
-    "###########",
-    "#P....G...#",
-    "#.........#",
-    "###########",
+    "#########################",
+    "#..................G....#",
+    "#.###.####.#..#####.###.#",
+    "#.......................#",
+    "#.####.####.##.####.###.#",
+    "#............##.........#",
+    "#.########.####.#######.#",
+    "#P......................#",
+    "#.#########.####.######.#",
+    "#............##.........#",
+    "#.####.#####.##.###.###.#",
+    "#.......................#",
+    "#.####.#####.#..###.###.#",
+    "#............#..........#",
+    "#########################",
 ]
-
 
 def main():
     """פונקציית main שמריצה את המשחק."""
@@ -202,7 +211,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-
 
 
 # מפה לדוגמה: # = קיר, . = מטבע, P = פקמן, G = רוח, רווח = כלום
