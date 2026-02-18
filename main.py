@@ -114,17 +114,20 @@ class PacmanGame(arcade.View):
                 x = col_idx * TILE_SIZE + TILE_SIZE / 2
                 y = row_idx * TILE_SIZE + TILE_SIZE / 2
 
-                if LEVEL_MAP[col_idx][row_idx] == "#":
+                if LEVEL_MAP[row_idx][col_idx] == "#":
                     self.wall_list.append(Wall(x, y))
 
-                elif LEVEL_MAP[col_idx][row_idx] == "P":
-                    self.player_list.append(Character(x, y, 2.5, arcade.color.YELLOW))
+                elif LEVEL_MAP[row_idx][col_idx] == "P":
+                    self.player=Player(WIDTH_WINDOW//2, HEIGHT_WINDOW//2)
+                    self.player_list.append(self.player)
 
-                elif LEVEL_MAP[col_idx][row_idx] == ".":
+                elif LEVEL_MAP[row_idx][col_idx] == ".":
                     self.coin_list.append(Coin(x, y))
 
-                elif LEVEL_MAP[col_idx][row_idx] == "G":
+                elif LEVEL_MAP[row_idx][col_idx] == "G":
                     self.ghost_list.append(Enemy(x, y))
+
+
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.UP:
@@ -177,6 +180,27 @@ class PacmanGame(arcade.View):
                         self.game_over= True
 
 
+
+
+# מפה לדוגמה: # = קיר, . = מטבע, P = פקמן, G = רוח, רווח = כלום
+LEVEL_MAP = [
+    "###########",
+    "#P....G...#",
+    "#.........#",
+    "###########",
+]
+
+
+def main():
+    """פונקציית main שמריצה את המשחק."""
+    window = arcade.Window(WIDTH_WINDOW, HEIGHT_WINDOW, WINDOW_TITLE)
+    game_view = PacmanGame()
+    game_view.setup()
+    window.show_view(game_view)
+    arcade.run()
+
+if __name__ == "__main__":
+    main()
 
 
 
