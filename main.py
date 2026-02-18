@@ -90,7 +90,8 @@ class PacmanGame(arcade.View):
         self.start_y=0
 
     def on_draw(self):
-        arcade.open_window(WIDTH_WINDOW, HEIGHT_WINDOW, WINDOW_TITLE)
+        # arcade.open_window(WIDTH_WINDOW, HEIGHT_WINDOW, WINDOW_TITLE)
+        self.clear()
         self.wall_list.draw()
         self.coin_list.draw()
         self.ghost_list.draw()
@@ -118,7 +119,7 @@ class PacmanGame(arcade.View):
                     self.wall_list.append(Wall(x, y))
 
                 elif LEVEL_MAP[row_idx][col_idx] == "P":
-                    self.player=Player(WIDTH_WINDOW//2, HEIGHT_WINDOW//2)
+                    self.player=Player(x, y)
                     self.player_list.append(self.player)
 
                 elif LEVEL_MAP[row_idx][col_idx] == ".":
@@ -160,7 +161,7 @@ class PacmanGame(arcade.View):
                 current_y = ghost.center_y
                 ghost.update()
                 ghost_wall = arcade.check_for_collision_with_list(ghost, self.wall_list)
-                while not len(ghost_wall)>0:
+                while len(ghost_wall)>0:
                     ghost.center_x = current_x
                     ghost.center_y = current_y
                     ghost.update()
